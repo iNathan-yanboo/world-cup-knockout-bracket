@@ -1,0 +1,628 @@
+<!doctype html>
+<!--
+  Assumptions:
+  - This is a visual design draft, not the production app.
+  - The official advancement path is easier to read when Round of 32 is ordered by bracket tree, not by match number.
+  - Flags use real raster assets from flagcdn.com so the production version can avoid emoji alignment issues.
+  Reasoning:
+  - The bracket needs a canvas-like surface with pan/zoom because the full 32-team tree is naturally wider and taller than one viewport.
+  - SVG connectors are layered behind HTML match cards so text, buttons, and accessibility stay in normal DOM.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>World Cup Bracket Canvas Design Draft</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --grass-50: #f4fbf3;
+        --grass-100: #e4f4df;
+        --grass-200: #cce7c4;
+        --grass-500: #2f8a50;
+        --grass-700: #175333;
+        --chalk: #ffffff;
+        --ink: #13201b;
+        --muted: #6b7b72;
+        --line: rgba(47, 138, 80, 0.28);
+        --line-strong: #2f8a50;
+        --gold: #d6aa38;
+        --blue: #1e6aa8;
+        --card: rgba(255, 255, 255, 0.93);
+        --shadow: 0 20px 50px rgba(23, 83, 51, 0.16);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        font-family:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 12% 16%, rgba(214, 170, 56, 0.22), transparent 22rem),
+          linear-gradient(135deg, #edf8e9 0%, #f9fcf6 48%, #e0f1dc 100%);
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .shell {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+
+      .topbar {
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(23, 83, 51, 0.12);
+        background: rgba(255, 255, 255, 0.78);
+        backdrop-filter: blur(18px);
+      }
+
+      .title {
+        display: grid;
+        gap: 2px;
+      }
+
+      .eyebrow {
+        margin: 0;
+        color: var(--grass-700);
+        font-size: 0.76rem;
+        font-weight: 850;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.5rem, 2.5vw, 2.75rem);
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      .subtitle {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tool-button,
+      .zoom-readout {
+        min-height: 40px;
+        border: 1px solid rgba(23, 83, 51, 0.16);
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--ink);
+        box-shadow: 0 8px 20px rgba(23, 83, 51, 0.08);
+      }
+
+      .tool-button {
+        min-width: 42px;
+        cursor: pointer;
+      }
+
+      .tool-button:hover {
+        border-color: rgba(47, 138, 80, 0.5);
+      }
+
+      .zoom-readout {
+        display: grid;
+        place-items: center;
+        min-width: 76px;
+        padding: 0 12px;
+        color: var(--grass-700);
+        font-size: 0.84rem;
+        font-weight: 750;
+      }
+
+      .viewport {
+        position: relative;
+        overflow: hidden;
+        cursor: grab;
+        background:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.42) 0 1px, transparent 1px 120px),
+          linear-gradient(0deg, rgba(255, 255, 255, 0.42) 0 1px, transparent 1px 120px),
+          radial-gradient(circle at center, rgba(255, 255, 255, 0.7), transparent 40rem);
+      }
+
+      .viewport.is-dragging {
+        cursor: grabbing;
+      }
+
+      .field-mark {
+        position: absolute;
+        inset: 54px;
+        border: 2px solid rgba(255, 255, 255, 0.74);
+        border-radius: 28px;
+        pointer-events: none;
+      }
+
+      .canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 2140px;
+        height: 1960px;
+        transform-origin: 0 0;
+      }
+
+      .connectors {
+        position: absolute;
+        inset: 0;
+        width: 2140px;
+        height: 1960px;
+        pointer-events: none;
+      }
+
+      .connector {
+        fill: none;
+        stroke: var(--line);
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .connector.is-active {
+        stroke: var(--line-strong);
+        stroke-width: 4;
+      }
+
+      .round-label {
+        position: absolute;
+        width: 290px;
+        color: var(--grass-700);
+        font-size: 0.8rem;
+        font-weight: 900;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .match {
+        position: absolute;
+        width: 290px;
+        min-height: 96px;
+        border: 1px solid rgba(23, 83, 51, 0.13);
+        border-radius: 8px;
+        background: var(--card);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(12px);
+      }
+
+      .match.is-next {
+        background: rgba(255, 255, 255, 0.84);
+      }
+
+      .match-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 9px 12px 6px;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 850;
+        text-transform: uppercase;
+      }
+
+      .match-id {
+        color: var(--grass-700);
+      }
+
+      .teams {
+        display: grid;
+        gap: 6px;
+        padding: 0 8px 10px;
+      }
+
+      .team {
+        display: grid;
+        grid-template-columns: 32px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 9px;
+        min-height: 42px;
+        width: 100%;
+        border: 1px solid rgba(19, 32, 27, 0.08);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--ink);
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .team:hover:not(:disabled) {
+        border-color: rgba(30, 106, 168, 0.45);
+        background: #ffffff;
+      }
+
+      .team.is-picked {
+        border-color: rgba(47, 138, 80, 0.58);
+        background: #ebf7ea;
+        box-shadow: inset 0 0 0 2px rgba(47, 138, 80, 0.16);
+      }
+
+      .team:disabled {
+        color: rgba(19, 32, 27, 0.45);
+        cursor: default;
+      }
+
+      .flag {
+        width: 26px;
+        height: 19px;
+        margin-left: 6px;
+        border-radius: 4px;
+        object-fit: cover;
+        box-shadow: 0 0 0 1px rgba(19, 32, 27, 0.08);
+      }
+
+      .placeholder-flag {
+        display: grid;
+        place-items: center;
+        width: 26px;
+        height: 19px;
+        margin-left: 6px;
+        border-radius: 4px;
+        background:
+          linear-gradient(90deg, transparent 45%, rgba(47, 138, 80, 0.25) 45% 55%, transparent 55%),
+          rgba(47, 138, 80, 0.1);
+      }
+
+      .team-name {
+        overflow-wrap: anywhere;
+        font-size: 0.9rem;
+        font-weight: 820;
+        line-height: 1.08;
+      }
+
+      .team-code {
+        padding-right: 8px;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 850;
+      }
+
+      .champion {
+        position: absolute;
+        width: 280px;
+        min-height: 180px;
+        padding: 18px;
+        border: 1px solid rgba(214, 170, 56, 0.38);
+        border-radius: 8px;
+        background:
+          linear-gradient(135deg, rgba(214, 170, 56, 0.2), transparent 45%),
+          rgba(255, 255, 255, 0.94);
+        box-shadow: 0 24px 70px rgba(23, 83, 51, 0.2);
+      }
+
+      .champion-label {
+        color: var(--grass-700);
+        font-size: 0.78rem;
+        font-weight: 900;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .champion-name {
+        display: block;
+        margin-top: 16px;
+        font-size: 2rem;
+        font-weight: 950;
+        line-height: 1.02;
+      }
+
+      .pitch-note {
+        position: absolute;
+        left: 80px;
+        top: 1848px;
+        width: 760px;
+        color: rgba(23, 83, 51, 0.66);
+        font-size: 0.86rem;
+        line-height: 1.45;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div class="title">
+          <p class="eyebrow">Design draft · canvas bracket</p>
+          <h1>2026 World Cup Knockout Map</h1>
+          <p class="subtitle">Flags, official route lines, drag canvas, zoom controls</p>
+        </div>
+        <div class="toolbar" aria-label="Canvas controls">
+          <button class="tool-button" id="zoom-out" type="button" aria-label="Zoom out">−</button>
+          <span class="zoom-readout" id="zoom-readout">82%</span>
+          <button class="tool-button" id="zoom-in" type="button" aria-label="Zoom in">+</button>
+          <button class="tool-button" id="reset-view" type="button" aria-label="Reset view">Reset</button>
+        </div>
+      </header>
+
+      <section class="viewport" id="viewport" aria-label="Bracket design canvas">
+        <div class="field-mark"></div>
+        <div class="canvas" id="canvas">
+          <svg class="connectors" id="connectors" viewBox="0 0 2140 1960" aria-hidden="true"></svg>
+          <div id="nodes"></div>
+          <p class="pitch-note">
+            Design note: Round of 32 is ordered by official advancement tree instead of date order, so each pair visually feeds the next match. Production can keep the same data graph and render lines from measured node positions.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <script type="application/json" id="design-draft-source">
+      const teams = {
+        RSA: ['South Africa', 'za'],
+        CAN: ['Canada', 'ca'],
+        GER: ['Germany', 'de'],
+        PAR: ['Paraguay', 'py'],
+        NED: ['Netherlands', 'nl'],
+        MAR: ['Morocco', 'ma'],
+        BRA: ['Brazil', 'br'],
+        JPN: ['Japan', 'jp'],
+        FRA: ['France', 'fr'],
+        SWE: ['Sweden', 'se'],
+        CIV: ['Ivory Coast', 'ci'],
+        NOR: ['Norway', 'no'],
+        MEX: ['Mexico', 'mx'],
+        ECU: ['Ecuador', 'ec'],
+        ENG: ['England', 'gb-eng'],
+        COD: ['DR Congo', 'cd'],
+        USA: ['USA', 'us'],
+        BIH: ['Bosnia and Herzegovina', 'ba'],
+        BEL: ['Belgium', 'be'],
+        SEN: ['Senegal', 'sn'],
+        POR: ['Portugal', 'pt'],
+        CRO: ['Croatia', 'hr'],
+        ESP: ['Spain', 'es'],
+        AUT: ['Austria', 'at'],
+        SUI: ['Switzerland', 'ch'],
+        ALG: ['Algeria', 'dz'],
+        ARG: ['Argentina', 'ar'],
+        CPV: ['Cape Verde', 'cv'],
+        COL: ['Colombia', 'co'],
+        GHA: ['Ghana', 'gh'],
+        AUS: ['Australia', 'au'],
+        EGY: ['Egypt', 'eg']
+      };
+
+      const matches = {
+        73: { round: 'Round of 32', date: 'Jun 28', slots: ['RSA', 'CAN'], pick: 'CAN' },
+        74: { round: 'Round of 32', date: 'Jun 29', slots: ['GER', 'PAR'] },
+        75: { round: 'Round of 32', date: 'Jun 29', slots: ['NED', 'MAR'] },
+        76: { round: 'Round of 32', date: 'Jun 29', slots: ['BRA', 'JPN'] },
+        77: { round: 'Round of 32', date: 'Jun 30', slots: ['FRA', 'SWE'] },
+        78: { round: 'Round of 32', date: 'Jun 30', slots: ['CIV', 'NOR'] },
+        79: { round: 'Round of 32', date: 'Jun 30', slots: ['MEX', 'ECU'] },
+        80: { round: 'Round of 32', date: 'Jun 30', slots: ['ENG', 'COD'] },
+        81: { round: 'Round of 32', date: 'Jul 1', slots: ['USA', 'BIH'] },
+        82: { round: 'Round of 32', date: 'Jul 1', slots: ['BEL', 'SEN'] },
+        83: { round: 'Round of 32', date: 'Jul 1', slots: ['POR', 'CRO'] },
+        84: { round: 'Round of 32', date: 'Jul 1', slots: ['ESP', 'AUT'] },
+        85: { round: 'Round of 32', date: 'Jul 2', slots: ['SUI', 'ALG'] },
+        86: { round: 'Round of 32', date: 'Jul 2', slots: ['ARG', 'CPV'] },
+        87: { round: 'Round of 32', date: 'Jul 2', slots: ['COL', 'GHA'] },
+        88: { round: 'Round of 32', date: 'Jul 3', slots: ['AUS', 'EGY'] },
+        89: { round: 'Round of 16', date: 'Jul 4', slots: ['Winner M74', 'Winner M77'] },
+        90: { round: 'Round of 16', date: 'Jul 4', slots: ['CAN', 'Winner M75'] },
+        91: { round: 'Round of 16', date: 'Jul 5', slots: ['Winner M76', 'Winner M78'] },
+        92: { round: 'Round of 16', date: 'Jul 5', slots: ['Winner M79', 'Winner M80'] },
+        93: { round: 'Round of 16', date: 'Jul 6', slots: ['Winner M83', 'Winner M84'] },
+        94: { round: 'Round of 16', date: 'Jul 6', slots: ['Winner M81', 'Winner M82'] },
+        95: { round: 'Round of 16', date: 'Jul 7', slots: ['Winner M86', 'Winner M88'] },
+        96: { round: 'Round of 16', date: 'Jul 7', slots: ['Winner M85', 'Winner M87'] },
+        97: { round: 'Quarterfinals', date: 'Jul 9', slots: ['Winner M89', 'Winner M90'] },
+        98: { round: 'Quarterfinals', date: 'Jul 9', slots: ['Winner M93', 'Winner M94'] },
+        99: { round: 'Quarterfinals', date: 'Jul 10', slots: ['Winner M91', 'Winner M92'] },
+        100: { round: 'Quarterfinals', date: 'Jul 10', slots: ['Winner M95', 'Winner M96'] },
+        101: { round: 'Semifinals', date: 'Jul 14', slots: ['Winner M97', 'Winner M98'] },
+        102: { round: 'Semifinals', date: 'Jul 15', slots: ['Winner M99', 'Winner M100'] },
+        104: { round: 'Final', date: 'Jul 19', slots: ['Winner M101', 'Winner M102'] }
+      };
+
+      const order = [74, 77, 73, 75, 76, 78, 79, 80, 83, 84, 81, 82, 86, 88, 85, 87];
+      const links = [
+        [74, 89], [77, 89], [73, 90], [75, 90], [76, 91], [78, 91], [79, 92], [80, 92],
+        [83, 93], [84, 93], [81, 94], [82, 94], [86, 95], [88, 95], [85, 96], [87, 96],
+        [89, 97], [90, 97], [93, 98], [94, 98], [91, 99], [92, 99], [95, 100], [96, 100],
+        [97, 101], [98, 101], [99, 102], [100, 102], [101, 104], [102, 104]
+      ];
+
+      const xByRound = {
+        r32: 80,
+        r16: 450,
+        qf: 820,
+        sf: 1190,
+        final: 1560,
+        champion: 1900
+      };
+      const positions = {};
+      order.forEach((id, index) => {
+        positions[id] = { x: xByRound.r32, y: 80 + index * 108 };
+      });
+
+      function centerY(a, b) {
+        return (positions[a].y + positions[b].y) / 2;
+      }
+
+      Object.assign(positions, {
+        89: { x: xByRound.r16, y: centerY(74, 77) },
+        90: { x: xByRound.r16, y: centerY(73, 75) },
+        91: { x: xByRound.r16, y: centerY(76, 78) },
+        92: { x: xByRound.r16, y: centerY(79, 80) },
+        93: { x: xByRound.r16, y: centerY(83, 84) },
+        94: { x: xByRound.r16, y: centerY(81, 82) },
+        95: { x: xByRound.r16, y: centerY(86, 88) },
+        96: { x: xByRound.r16, y: centerY(85, 87) }
+      });
+      Object.assign(positions, {
+        97: { x: xByRound.qf, y: centerY(89, 90) },
+        98: { x: xByRound.qf, y: centerY(93, 94) },
+        99: { x: xByRound.qf, y: centerY(91, 92) },
+        100: { x: xByRound.qf, y: centerY(95, 96) }
+      });
+      Object.assign(positions, {
+        101: { x: xByRound.sf, y: centerY(97, 98) },
+        102: { x: xByRound.sf, y: centerY(99, 100) },
+        104: { x: xByRound.final, y: centerY(101, 102) }
+      });
+
+      const nodes = document.querySelector('#nodes');
+      const connectors = document.querySelector('#connectors');
+      const canvas = document.querySelector('#canvas');
+      const viewport = document.querySelector('#viewport');
+      const readout = document.querySelector('#zoom-readout');
+
+      function flagUrl(code) {
+        return `https://flagcdn.com/w80/${code}.png`;
+      }
+
+      function renderTeam(slot, match) {
+        if (!teams[slot]) {
+          return `
+            <button class="team" type="button" disabled>
+              <span class="placeholder-flag"></span>
+              <span class="team-name">${slot}</span>
+              <span class="team-code">TBD</span>
+            </button>
+          `;
+        }
+
+        const [name, flag] = teams[slot];
+        const picked = match.pick === slot ? ' is-picked' : '';
+        return `
+          <button class="team${picked}" type="button">
+            <img class="flag" src="${flagUrl(flag)}" alt="">
+            <span class="team-name">${name}</span>
+            <span class="team-code">${slot}</span>
+          </button>
+        `;
+      }
+
+      function render() {
+        nodes.innerHTML = [
+          ['Round of 32', xByRound.r32],
+          ['Round of 16', xByRound.r16],
+          ['Quarterfinals', xByRound.qf],
+          ['Semifinals', xByRound.sf],
+          ['Final', xByRound.final],
+          ['Champion', xByRound.champion]
+        ]
+          .map(([label, x]) => `<div class="round-label" style="left:${x}px;top:38px">${label}</div>`)
+          .join('');
+
+        for (const [id, match] of Object.entries(matches)) {
+          const pos = positions[id];
+          nodes.insertAdjacentHTML(
+            'beforeend',
+            `
+              <article class="match ${match.round === 'Round of 32' ? '' : 'is-next'}" style="left:${pos.x}px;top:${pos.y}px" data-match="${id}">
+                <header class="match-header">
+                  <span class="match-id">M${id}</span>
+                  <span>${match.date}</span>
+                </header>
+                <div class="teams">
+                  ${match.slots.map((slot) => renderTeam(slot, match)).join('')}
+                </div>
+              </article>
+            `
+          );
+        }
+
+        nodes.insertAdjacentHTML(
+          'beforeend',
+          `
+            <section class="champion" style="left:${xByRound.champion}px;top:${positions[104].y - 38}px">
+              <span class="champion-label">Champion</span>
+              <span class="champion-name">Winner M104</span>
+            </section>
+          `
+        );
+
+        connectors.innerHTML = links
+          .map(([from, to]) => {
+            const fromPos = positions[from];
+            const toPos = positions[to];
+            const x1 = fromPos.x + 290;
+            const y1 = fromPos.y + 48;
+            const x2 = toPos.x;
+            const y2 = toPos.y + 48;
+            const mid = x1 + (x2 - x1) * 0.5;
+            const active = from === 73 || to === 90 ? ' is-active' : '';
+            return `<path class="connector${active}" d="M ${x1} ${y1} C ${mid} ${y1}, ${mid} ${y2}, ${x2} ${y2}" />`;
+          })
+          .join('');
+      }
+
+      let view = { x: -8, y: 12, scale: 0.82 };
+      let drag = null;
+
+      function applyView() {
+        canvas.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
+        readout.textContent = `${Math.round(view.scale * 100)}%`;
+      }
+
+      function zoom(delta) {
+        view.scale = Math.min(1.35, Math.max(0.42, view.scale + delta));
+        applyView();
+      }
+
+      viewport.addEventListener('pointerdown', (event) => {
+        if (event.target.closest('button')) return;
+        drag = { x: event.clientX, y: event.clientY, startX: view.x, startY: view.y };
+        viewport.classList.add('is-dragging');
+        viewport.setPointerCapture(event.pointerId);
+      });
+
+      viewport.addEventListener('pointermove', (event) => {
+        if (!drag) return;
+        view.x = drag.startX + event.clientX - drag.x;
+        view.y = drag.startY + event.clientY - drag.y;
+        applyView();
+      });
+
+      viewport.addEventListener('pointerup', () => {
+        drag = null;
+        viewport.classList.remove('is-dragging');
+      });
+
+      viewport.addEventListener('wheel', (event) => {
+        event.preventDefault();
+        zoom(event.deltaY > 0 ? -0.04 : 0.04);
+      }, { passive: false });
+
+      document.querySelector('#zoom-in').addEventListener('click', () => zoom(0.08));
+      document.querySelector('#zoom-out').addEventListener('click', () => zoom(-0.08));
+      document.querySelector('#reset-view').addEventListener('click', () => {
+        view = { x: -8, y: 12, scale: 0.82 };
+        applyView();
+      });
+
+      render();
+      applyView();
+    </script>
+    <script type="module" src="./bracket-canvas-design.js"></script>
+    <script>
+      document.body.dataset.inlineProbe = 'true';
+    </script>
+  </body>
+</html>
