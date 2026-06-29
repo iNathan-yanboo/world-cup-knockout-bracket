@@ -1,95 +1,102 @@
 document.body.dataset.moduleLoaded = 'true';
 
 try {
-if (!document.querySelector('.match')) {
   const teams = {
-    RSA: ['South Africa', 'za'],
-    CAN: ['Canada', 'ca'],
-    GER: ['Germany', 'de'],
-    PAR: ['Paraguay', 'py'],
-    NED: ['Netherlands', 'nl'],
-    MAR: ['Morocco', 'ma'],
-    BRA: ['Brazil', 'br'],
-    JPN: ['Japan', 'jp'],
-    FRA: ['France', 'fr'],
-    SWE: ['Sweden', 'se'],
-    CIV: ['Ivory Coast', 'ci'],
-    NOR: ['Norway', 'no'],
-    MEX: ['Mexico', 'mx'],
-    ECU: ['Ecuador', 'ec'],
-    ENG: ['England', 'gb-eng'],
-    COD: ['DR Congo', 'cd'],
-    USA: ['USA', 'us'],
-    BIH: ['Bosnia and Herzegovina', 'ba'],
-    BEL: ['Belgium', 'be'],
-    SEN: ['Senegal', 'sn'],
-    POR: ['Portugal', 'pt'],
-    CRO: ['Croatia', 'hr'],
-    ESP: ['Spain', 'es'],
-    AUT: ['Austria', 'at'],
-    SUI: ['Switzerland', 'ch'],
-    ALG: ['Algeria', 'dz'],
-    ARG: ['Argentina', 'ar'],
-    CPV: ['Cape Verde', 'cv'],
-    COL: ['Colombia', 'co'],
-    GHA: ['Ghana', 'gh'],
-    AUS: ['Australia', 'au'],
-    EGY: ['Egypt', 'eg']
+    RSA: ['南非', 'za'],
+    CAN: ['加拿大', 'ca'],
+    GER: ['德国', 'de'],
+    PAR: ['巴拉圭', 'py'],
+    NED: ['荷兰', 'nl'],
+    MAR: ['摩洛哥', 'ma'],
+    BRA: ['巴西', 'br'],
+    JPN: ['日本', 'jp'],
+    FRA: ['法国', 'fr'],
+    SWE: ['瑞典', 'se'],
+    CIV: ['科特迪瓦', 'ci'],
+    NOR: ['挪威', 'no'],
+    MEX: ['墨西哥', 'mx'],
+    ECU: ['厄瓜多尔', 'ec'],
+    ENG: ['英格兰', 'gb-eng'],
+    COD: ['刚果（金）', 'cd'],
+    USA: ['美国', 'us'],
+    BIH: ['波黑', 'ba'],
+    BEL: ['比利时', 'be'],
+    SEN: ['塞内加尔', 'sn'],
+    POR: ['葡萄牙', 'pt'],
+    CRO: ['克罗地亚', 'hr'],
+    ESP: ['西班牙', 'es'],
+    AUT: ['奥地利', 'at'],
+    SUI: ['瑞士', 'ch'],
+    ALG: ['阿尔及利亚', 'dz'],
+    ARG: ['阿根廷', 'ar'],
+    CPV: ['佛得角', 'cv'],
+    COL: ['哥伦比亚', 'co'],
+    GHA: ['加纳', 'gh'],
+    AUS: ['澳大利亚', 'au'],
+    EGY: ['埃及', 'eg']
   };
 
   const matches = {
-    73: { round: 'Round of 32', date: 'Jun 28', slots: ['RSA', 'CAN'], pick: 'CAN' },
-    74: { round: 'Round of 32', date: 'Jun 29', slots: ['GER', 'PAR'] },
-    75: { round: 'Round of 32', date: 'Jun 29', slots: ['NED', 'MAR'] },
-    76: { round: 'Round of 32', date: 'Jun 29', slots: ['BRA', 'JPN'] },
-    77: { round: 'Round of 32', date: 'Jun 30', slots: ['FRA', 'SWE'] },
-    78: { round: 'Round of 32', date: 'Jun 30', slots: ['CIV', 'NOR'] },
-    79: { round: 'Round of 32', date: 'Jun 30', slots: ['MEX', 'ECU'] },
-    80: { round: 'Round of 32', date: 'Jun 30', slots: ['ENG', 'COD'] },
-    81: { round: 'Round of 32', date: 'Jul 1', slots: ['USA', 'BIH'] },
-    82: { round: 'Round of 32', date: 'Jul 1', slots: ['BEL', 'SEN'] },
-    83: { round: 'Round of 32', date: 'Jul 1', slots: ['POR', 'CRO'] },
-    84: { round: 'Round of 32', date: 'Jul 1', slots: ['ESP', 'AUT'] },
-    85: { round: 'Round of 32', date: 'Jul 2', slots: ['SUI', 'ALG'] },
-    86: { round: 'Round of 32', date: 'Jul 2', slots: ['ARG', 'CPV'] },
-    87: { round: 'Round of 32', date: 'Jul 2', slots: ['COL', 'GHA'] },
-    88: { round: 'Round of 32', date: 'Jul 3', slots: ['AUS', 'EGY'] },
-    89: { round: 'Round of 16', date: 'Jul 4', slots: ['Winner M74', 'Winner M77'] },
-    90: { round: 'Round of 16', date: 'Jul 4', slots: ['CAN', 'Winner M75'] },
-    91: { round: 'Round of 16', date: 'Jul 5', slots: ['Winner M76', 'Winner M78'] },
-    92: { round: 'Round of 16', date: 'Jul 5', slots: ['Winner M79', 'Winner M80'] },
-    93: { round: 'Round of 16', date: 'Jul 6', slots: ['Winner M83', 'Winner M84'] },
-    94: { round: 'Round of 16', date: 'Jul 6', slots: ['Winner M81', 'Winner M82'] },
-    95: { round: 'Round of 16', date: 'Jul 7', slots: ['Winner M86', 'Winner M88'] },
-    96: { round: 'Round of 16', date: 'Jul 7', slots: ['Winner M85', 'Winner M87'] },
-    97: { round: 'Quarterfinals', date: 'Jul 9', slots: ['Winner M89', 'Winner M90'] },
-    98: { round: 'Quarterfinals', date: 'Jul 9', slots: ['Winner M93', 'Winner M94'] },
-    99: { round: 'Quarterfinals', date: 'Jul 10', slots: ['Winner M91', 'Winner M92'] },
-    100: { round: 'Quarterfinals', date: 'Jul 10', slots: ['Winner M95', 'Winner M96'] },
-    101: { round: 'Semifinals', date: 'Jul 14', slots: ['Winner M97', 'Winner M98'] },
-    102: { round: 'Semifinals', date: 'Jul 15', slots: ['Winner M99', 'Winner M100'] },
-    104: { round: 'Final', date: 'Jul 19', slots: ['Winner M101', 'Winner M102'] }
+    73: { round: '32强', date: '6月28日', slots: ['RSA', 'CAN'], pick: 'CAN' },
+    74: { round: '32强', date: '6月29日', slots: ['GER', 'PAR'] },
+    75: { round: '32强', date: '6月29日', slots: ['NED', 'MAR'] },
+    76: { round: '32强', date: '6月29日', slots: ['BRA', 'JPN'] },
+    77: { round: '32强', date: '6月30日', slots: ['FRA', 'SWE'] },
+    78: { round: '32强', date: '6月30日', slots: ['CIV', 'NOR'] },
+    79: { round: '32强', date: '6月30日', slots: ['MEX', 'ECU'] },
+    80: { round: '32强', date: '6月30日', slots: ['ENG', 'COD'] },
+    81: { round: '32强', date: '7月1日', slots: ['USA', 'BIH'] },
+    82: { round: '32强', date: '7月1日', slots: ['BEL', 'SEN'] },
+    83: { round: '32强', date: '7月1日', slots: ['POR', 'CRO'] },
+    84: { round: '32强', date: '7月1日', slots: ['ESP', 'AUT'] },
+    85: { round: '32强', date: '7月2日', slots: ['SUI', 'ALG'] },
+    86: { round: '32强', date: '7月2日', slots: ['ARG', 'CPV'] },
+    87: { round: '32强', date: '7月2日', slots: ['COL', 'GHA'] },
+    88: { round: '32强', date: '7月3日', slots: ['AUS', 'EGY'] },
+    89: { round: '16强', date: '7月4日', slots: ['胜者 M74', '胜者 M77'] },
+    90: { round: '16强', date: '7月4日', slots: ['CAN', '胜者 M75'] },
+    91: { round: '16强', date: '7月5日', slots: ['胜者 M76', '胜者 M78'] },
+    92: { round: '16强', date: '7月5日', slots: ['胜者 M79', '胜者 M80'] },
+    93: { round: '16强', date: '7月6日', slots: ['胜者 M83', '胜者 M84'] },
+    94: { round: '16强', date: '7月6日', slots: ['胜者 M81', '胜者 M82'] },
+    95: { round: '16强', date: '7月7日', slots: ['胜者 M86', '胜者 M88'] },
+    96: { round: '16强', date: '7月7日', slots: ['胜者 M85', '胜者 M87'] },
+    97: { round: '8强', date: '7月9日', slots: ['胜者 M89', '胜者 M90'] },
+    98: { round: '8强', date: '7月9日', slots: ['胜者 M93', '胜者 M94'] },
+    99: { round: '8强', date: '7月10日', slots: ['胜者 M91', '胜者 M92'] },
+    100: { round: '8强', date: '7月10日', slots: ['胜者 M95', '胜者 M96'] },
+    101: { round: '半决赛', date: '7月14日', slots: ['胜者 M97', '胜者 M98'] },
+    102: { round: '半决赛', date: '7月15日', slots: ['胜者 M99', '胜者 M100'] }
   };
 
-  const order = [74, 77, 73, 75, 76, 78, 79, 80, 83, 84, 81, 82, 86, 88, 85, 87];
+  const leftOrder = [74, 77, 73, 75, 83, 84, 81, 82];
+  const rightOrder = [76, 78, 79, 80, 86, 88, 85, 87];
   const links = [
-    [74, 89], [77, 89], [73, 90], [75, 90], [76, 91], [78, 91], [79, 92], [80, 92],
-    [83, 93], [84, 93], [81, 94], [82, 94], [86, 95], [88, 95], [85, 96], [87, 96],
-    [89, 97], [90, 97], [93, 98], [94, 98], [91, 99], [92, 99], [95, 100], [96, 100],
-    [97, 101], [98, 101], [99, 102], [100, 102], [101, 104], [102, 104]
+    [74, 89], [77, 89], [73, 90], [75, 90], [83, 93], [84, 93], [81, 94], [82, 94],
+    [89, 97], [90, 97], [93, 98], [94, 98], [97, 101], [98, 101], [101, 'champion-left'],
+    [76, 91], [78, 91], [79, 92], [80, 92], [86, 95], [88, 95], [85, 96], [87, 96],
+    [91, 99], [92, 99], [95, 100], [96, 100], [99, 102], [100, 102], [102, 'champion-right']
   ];
 
+  const cardWidth = 248;
+  const center = { x: 1045, y: 470, width: 430, height: 340 };
   const xByRound = {
-    r32: 80,
-    r16: 450,
-    qf: 820,
-    sf: 1190,
-    final: 1560,
-    champion: 1900
+    left32: 70,
+    left16: 360,
+    left8: 625,
+    left4: 740,
+    right4: 1535,
+    right8: 1650,
+    right16: 1915,
+    right32: 2205
   };
   const positions = {};
-  order.forEach((id, index) => {
-    positions[id] = { x: xByRound.r32, y: 80 + index * 108 };
+
+  leftOrder.forEach((id, index) => {
+    positions[id] = { side: 'left', x: xByRound.left32, y: 150 + index * 116 };
+  });
+  rightOrder.forEach((id, index) => {
+    positions[id] = { side: 'right', x: xByRound.right32, y: 150 + index * 116 };
   });
 
   function centerY(a, b) {
@@ -97,27 +104,32 @@ if (!document.querySelector('.match')) {
   }
 
   Object.assign(positions, {
-    89: { x: xByRound.r16, y: centerY(74, 77) },
-    90: { x: xByRound.r16, y: centerY(73, 75) },
-    91: { x: xByRound.r16, y: centerY(76, 78) },
-    92: { x: xByRound.r16, y: centerY(79, 80) },
-    93: { x: xByRound.r16, y: centerY(83, 84) },
-    94: { x: xByRound.r16, y: centerY(81, 82) },
-    95: { x: xByRound.r16, y: centerY(86, 88) },
-    96: { x: xByRound.r16, y: centerY(85, 87) }
+    89: { side: 'left', x: xByRound.left16, y: centerY(74, 77) },
+    90: { side: 'left', x: xByRound.left16, y: centerY(73, 75) },
+    93: { side: 'left', x: xByRound.left16, y: centerY(83, 84) },
+    94: { side: 'left', x: xByRound.left16, y: centerY(81, 82) },
+    91: { side: 'right', x: xByRound.right16, y: centerY(76, 78) },
+    92: { side: 'right', x: xByRound.right16, y: centerY(79, 80) },
+    95: { side: 'right', x: xByRound.right16, y: centerY(86, 88) },
+    96: { side: 'right', x: xByRound.right16, y: centerY(85, 87) }
   });
   Object.assign(positions, {
-    97: { x: xByRound.qf, y: centerY(89, 90) },
-    98: { x: xByRound.qf, y: centerY(93, 94) },
-    99: { x: xByRound.qf, y: centerY(91, 92) },
-    100: { x: xByRound.qf, y: centerY(95, 96) }
+    97: { side: 'left', x: xByRound.left8, y: centerY(89, 90) },
+    98: { side: 'left', x: xByRound.left8, y: centerY(93, 94) },
+    99: { side: 'right', x: xByRound.right8, y: centerY(91, 92) },
+    100: { side: 'right', x: xByRound.right8, y: centerY(95, 96) }
   });
   Object.assign(positions, {
-    101: { x: xByRound.sf, y: centerY(97, 98) },
-    102: { x: xByRound.sf, y: centerY(99, 100) }
+    101: { side: 'left', x: xByRound.left4, y: centerY(97, 98) },
+    102: { side: 'right', x: xByRound.right4, y: centerY(99, 100) }
   });
   Object.assign(positions, {
-    104: { x: xByRound.final, y: centerY(101, 102) }
+    'champion-left': { side: 'center', x: center.x, y: center.y + center.height / 2 - 48 },
+    'champion-right': {
+      side: 'center',
+      x: center.x + center.width,
+      y: center.y + center.height / 2 - 48
+    }
   });
 
   const nodes = document.querySelector('#nodes');
@@ -136,7 +148,7 @@ if (!document.querySelector('.match')) {
         <button class="team" type="button" disabled>
           <span class="placeholder-flag"></span>
           <span class="team-name">${slot}</span>
-          <span class="team-code">TBD</span>
+          <span class="team-code">待定</span>
         </button>
       `;
     }
@@ -152,62 +164,91 @@ if (!document.querySelector('.match')) {
     `;
   }
 
-  function render() {
-    nodes.innerHTML = [
-      ['Round of 32', xByRound.r32],
-      ['Round of 16', xByRound.r16],
-      ['Quarterfinals', xByRound.qf],
-      ['Semifinals', xByRound.sf],
-      ['Final', xByRound.final],
-      ['Champion', xByRound.champion]
-    ]
-      .map(([label, x]) => `<div class="round-label" style="left:${x}px;top:38px">${label}</div>`)
-      .join('');
+  function renderMatch(id, match) {
+    const pos = positions[id];
 
-    for (const [id, match] of Object.entries(matches)) {
-      const pos = positions[id];
-      nodes.insertAdjacentHTML(
-        'beforeend',
-        `
-          <article class="match ${match.round === 'Round of 32' ? '' : 'is-next'}" style="left:${pos.x}px;top:${pos.y}px" data-match="${id}">
-            <header class="match-header">
-              <span class="match-id">M${id}</span>
-              <span>${match.date}</span>
-            </header>
-            <div class="teams">
-              ${match.slots.map((slot) => renderTeam(slot, match)).join('')}
-            </div>
-          </article>
-        `
-      );
-    }
-
-    nodes.insertAdjacentHTML(
-      'beforeend',
-      `
-        <section class="champion" style="left:${xByRound.champion}px;top:${positions[104].y - 38}px">
-          <span class="champion-label">Champion</span>
-          <span class="champion-name">Winner M104</span>
-        </section>
-      `
-    );
-
-    connectors.innerHTML = links
-      .map(([from, to]) => {
-        const fromPos = positions[from];
-        const toPos = positions[to];
-        const x1 = fromPos.x + 290;
-        const y1 = fromPos.y + 48;
-        const x2 = toPos.x;
-        const y2 = toPos.y + 48;
-        const mid = x1 + (x2 - x1) * 0.5;
-        const active = from === 73 || to === 90 ? ' is-active' : '';
-        return `<path class="connector${active}" d="M ${x1} ${y1} C ${mid} ${y1}, ${mid} ${y2}, ${x2} ${y2}" />`;
-      })
-      .join('');
+    return `
+      <article class="match ${match.round === '32强' ? '' : 'is-next'}" style="left:${pos.x}px;top:${pos.y}px" data-match="${id}">
+        <header class="match-header">
+          <span class="match-id">M${id}</span>
+          <span>${match.date}</span>
+        </header>
+        <div class="teams">
+          ${match.slots.map((slot) => renderTeam(slot, match)).join('')}
+        </div>
+      </article>
+    `;
   }
 
-  let view = { x: -8, y: 12, scale: 0.82 };
+  function renderChampion() {
+    return `
+      <section class="champion-hub" style="left:${center.x}px;top:${center.y}px" data-match="104">
+        <div class="champion-ring">冠</div>
+        <span class="champion-label">决赛中心 · M104</span>
+        <strong class="champion-name">世界冠军</strong>
+        <div class="final-slots">
+          <div class="final-slot"><span>左半区冠军</span><span>胜者 M101</span></div>
+          <div class="final-slot"><span>右半区冠军</span><span>胜者 M102</span></div>
+        </div>
+      </section>
+    `;
+  }
+
+  function renderLabels() {
+    const labels = [
+      ['左半区 32强', xByRound.left32, 96, ''],
+      ['16强', xByRound.left16, 96, ''],
+      ['8强', xByRound.left8, 96, ''],
+      ['半决赛', xByRound.left4, 96, ''],
+      ['右半区 32强', xByRound.right32, 96, 'is-right'],
+      ['16强', xByRound.right16, 96, 'is-right'],
+      ['8强', xByRound.right8, 96, 'is-right'],
+      ['半决赛', xByRound.right4, 96, 'is-right']
+    ];
+
+    return `
+      <div class="zone-label" style="left:${xByRound.left32}px;top:56px">左半区 · 八组对阵</div>
+      <div class="zone-label" style="left:${xByRound.right32 - 112}px;top:56px;text-align:right">右半区 · 八组对阵</div>
+      ${labels
+        .map(
+          ([label, x, y, className]) =>
+            `<div class="round-label ${className}" style="left:${x}px;top:${y}px">${label}</div>`
+        )
+        .join('')}
+    `;
+  }
+
+  function connectorPath(from, to) {
+    const fromPos = positions[from];
+    const toPos = positions[to];
+    const fromIsRight = fromPos.side === 'right';
+    const toIsCenterRight = to === 'champion-right';
+    const fromX = fromIsRight ? fromPos.x : fromPos.x + cardWidth;
+    const fromY = fromPos.y + 45;
+    const toX = toIsCenterRight
+      ? toPos.x
+      : fromIsRight
+        ? toPos.x + cardWidth
+        : toPos.x;
+    const toY = toPos.y + 45;
+    const curve = Math.max(72, Math.abs(toX - fromX) * 0.5);
+    const c1 = fromIsRight ? fromX - curve : fromX + curve;
+    const c2 = fromIsRight ? toX + curve : toX - curve;
+    const active = from === 73 || to === 90 ? ' is-active' : '';
+
+    return `<path class="connector${active}" d="M ${fromX} ${fromY} C ${c1} ${fromY}, ${c2} ${toY}, ${toX} ${toY}" />`;
+  }
+
+  function render() {
+    nodes.innerHTML = `
+      ${renderLabels()}
+      ${Object.entries(matches).map(([id, match]) => renderMatch(id, match)).join('')}
+      ${renderChampion()}
+    `;
+    connectors.innerHTML = links.map(([from, to]) => connectorPath(from, to)).join('');
+  }
+
+  let view = { x: -25, y: 42, scale: 0.54 };
   let drag = null;
 
   function applyView() {
@@ -216,19 +257,25 @@ if (!document.querySelector('.match')) {
   }
 
   function zoom(delta) {
-    view.scale = Math.min(1.35, Math.max(0.42, view.scale + delta));
+    view.scale = Math.min(1.28, Math.max(0.42, view.scale + delta));
     applyView();
   }
 
   viewport.addEventListener('pointerdown', (event) => {
-    if (event.target.closest('button')) return;
+    if (event.target.closest('button')) {
+      return;
+    }
+
     drag = { x: event.clientX, y: event.clientY, startX: view.x, startY: view.y };
     viewport.classList.add('is-dragging');
     viewport.setPointerCapture(event.pointerId);
   });
 
   viewport.addEventListener('pointermove', (event) => {
-    if (!drag) return;
+    if (!drag) {
+      return;
+    }
+
     view.x = drag.startX + event.clientX - drag.x;
     view.y = drag.startY + event.clientY - drag.y;
     applyView();
@@ -239,25 +286,29 @@ if (!document.querySelector('.match')) {
     viewport.classList.remove('is-dragging');
   });
 
-  viewport.addEventListener('wheel', (event) => {
-    event.preventDefault();
-    zoom(event.deltaY > 0 ? -0.04 : 0.04);
-  }, { passive: false });
+  viewport.addEventListener(
+    'wheel',
+    (event) => {
+      event.preventDefault();
+      zoom(event.deltaY > 0 ? -0.04 : 0.04);
+    },
+    { passive: false }
+  );
 
   document.querySelector('#zoom-in').addEventListener('click', () => zoom(0.08));
   document.querySelector('#zoom-out').addEventListener('click', () => zoom(-0.08));
   document.querySelector('#reset-view').addEventListener('click', () => {
-    view = { x: -8, y: 12, scale: 0.82 };
+    view = { x: -25, y: 42, scale: 0.54 };
     applyView();
   });
 
   render();
   applyView();
-}
 } catch (error) {
   document.body.dataset.moduleError = error instanceof Error ? error.message : String(error);
   const errorBox = document.createElement('pre');
-  errorBox.style.cssText = 'position:fixed;left:16px;bottom:16px;z-index:9999;max-width:720px;padding:12px;background:#fff2f2;color:#7a1d1d;border:1px solid #e09a9a;border-radius:8px;white-space:pre-wrap;';
-  errorBox.textContent = `Design draft render error: ${document.body.dataset.moduleError}`;
+  errorBox.style.cssText =
+    'position:fixed;left:16px;bottom:16px;z-index:9999;max-width:720px;padding:12px;background:#fff2f2;color:#7a1d1d;border:1px solid #e09a9a;border-radius:8px;white-space:pre-wrap;';
+  errorBox.textContent = `设计稿渲染错误：${document.body.dataset.moduleError}`;
   document.body.append(errorBox);
 }
