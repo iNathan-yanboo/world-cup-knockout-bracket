@@ -1,0 +1,378 @@
+:root {
+  color-scheme: dark;
+  --bg: #071411;
+  --field: #0d2f26;
+  --field-2: #103f32;
+  --panel: #f7f4ea;
+  --panel-soft: #ebe3d0;
+  --ink: #17211e;
+  --muted: #6b746e;
+  --line: rgba(247, 244, 234, 0.18);
+  --line-dark: rgba(23, 33, 30, 0.12);
+  --gold: #d8aa38;
+  --red: #c94f4f;
+  --blue: #3b6f9f;
+  --green: #168b5a;
+  --shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--bg);
+}
+
+body {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  color: var(--panel);
+  background:
+    linear-gradient(90deg, transparent 0 48%, rgba(247, 244, 234, 0.08) 48% 52%, transparent 52%),
+    radial-gradient(circle at 50% 0%, rgba(216, 170, 56, 0.16), transparent 28rem),
+    linear-gradient(135deg, var(--field), var(--bg) 62%);
+}
+
+button,
+a {
+  font: inherit;
+}
+
+a {
+  color: var(--panel);
+  text-decoration-color: rgba(216, 170, 56, 0.7);
+  text-underline-offset: 0.24em;
+}
+
+a:hover {
+  color: #ffffff;
+}
+
+.app-shell {
+  width: min(100%, 1920px);
+  margin: 0 auto;
+  padding: 24px clamp(14px, 2vw, 32px) 40px;
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 0 16px;
+  background: linear-gradient(180deg, rgba(7, 20, 17, 0.96), rgba(7, 20, 17, 0.78));
+  backdrop-filter: blur(14px);
+}
+
+.title-block {
+  display: grid;
+  gap: 4px;
+}
+
+.eyebrow,
+.snapshot-line,
+.match-status,
+.source-panel {
+  margin: 0;
+  color: rgba(247, 244, 234, 0.72);
+}
+
+.eyebrow {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1,
+h2 {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+h1 {
+  font-size: clamp(2rem, 4vw, 4.5rem);
+  line-height: 0.96;
+}
+
+h2 {
+  font-size: 0.94rem;
+  text-transform: uppercase;
+  color: rgba(247, 244, 234, 0.82);
+}
+
+.snapshot-line {
+  font-size: 0.95rem;
+}
+
+.reset-button {
+  min-width: 88px;
+  min-height: 44px;
+  border: 1px solid rgba(247, 244, 234, 0.35);
+  border-radius: 8px;
+  color: var(--panel);
+  background: rgba(247, 244, 234, 0.08);
+  cursor: pointer;
+}
+
+.reset-button:hover {
+  border-color: rgba(216, 170, 56, 0.85);
+  background: rgba(216, 170, 56, 0.14);
+}
+
+.source-panel {
+  display: grid;
+  gap: 6px;
+  max-width: 1180px;
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(7, 20, 17, 0.46);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.source-panel p {
+  margin: 0;
+}
+
+.source-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.bracket-scroll {
+  overflow-x: auto;
+  padding: 8px 0 20px;
+  scrollbar-color: var(--gold) rgba(247, 244, 234, 0.12);
+}
+
+.bracket-board {
+  display: grid;
+  grid-template-columns:
+    minmax(260px, 1.2fr)
+    minmax(260px, 1.05fr)
+    minmax(260px, 1fr)
+    minmax(260px, 0.95fr)
+    minmax(260px, 0.9fr)
+    minmax(240px, 0.75fr);
+  gap: 16px;
+  min-width: 1660px;
+  align-items: start;
+}
+
+.round-column,
+.champion-column {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.round-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.round-column[data-round="round16"] .round-stack {
+  gap: 26px;
+  padding-top: 26px;
+}
+
+.round-column[data-round="quarterfinal"] .round-stack {
+  gap: 78px;
+  padding-top: 82px;
+}
+
+.round-column[data-round="semifinal"] .round-stack {
+  gap: 224px;
+  padding-top: 216px;
+}
+
+.round-column[data-round="final"] .round-stack {
+  padding-top: 506px;
+}
+
+.champion-column {
+  padding-top: 506px;
+}
+
+.match-card,
+.champion-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line-dark);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+.match-card::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  content: "";
+  background: linear-gradient(180deg, var(--green), var(--gold));
+}
+
+.match-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px 8px 16px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.match-id {
+  color: var(--ink);
+}
+
+.team-list {
+  display: grid;
+  gap: 7px;
+  padding: 0 10px 10px 16px;
+}
+
+.team-button {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 58px;
+  border: 1px solid rgba(23, 33, 30, 0.14);
+  border-radius: 8px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.58);
+  text-align: left;
+  cursor: pointer;
+}
+
+.team-button:hover:not(:disabled) {
+  border-color: rgba(22, 139, 90, 0.72);
+  background: #ffffff;
+}
+
+.team-button:focus-visible,
+.reset-button:focus-visible {
+  outline: 3px solid rgba(216, 170, 56, 0.72);
+  outline-offset: 2px;
+}
+
+.team-button.is-selected {
+  border-color: rgba(22, 139, 90, 0.88);
+  background: #e9f7ee;
+  box-shadow: inset 0 0 0 2px rgba(22, 139, 90, 0.2);
+}
+
+.team-button.is-placeholder {
+  grid-template-columns: 1fr;
+  min-height: 58px;
+  color: rgba(23, 33, 30, 0.45);
+  background: rgba(235, 227, 208, 0.52);
+  cursor: not-allowed;
+}
+
+.team-code {
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  min-height: 42px;
+  border-radius: 6px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--blue), var(--green));
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.team-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.team-name,
+.team-seed {
+  overflow-wrap: anywhere;
+}
+
+.team-name {
+  font-size: 0.96rem;
+  font-weight: 850;
+  line-height: 1.16;
+}
+
+.team-seed {
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.2;
+}
+
+.match-status {
+  padding: 0 12px 12px 16px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.3;
+}
+
+.champion-card {
+  display: grid;
+  gap: 8px;
+  min-height: 170px;
+  padding: 18px;
+  background:
+    linear-gradient(135deg, rgba(216, 170, 56, 0.2), transparent 42%),
+    var(--panel);
+}
+
+.champion-label,
+.champion-hint {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.champion-name {
+  color: var(--ink);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  line-height: 1.02;
+}
+
+@media (max-width: 720px) {
+  .app-shell {
+    padding-inline: 12px;
+  }
+
+  .app-header {
+    align-items: start;
+    padding-top: 12px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .source-panel {
+    font-size: 0.78rem;
+  }
+
+  .bracket-board {
+    min-width: 1540px;
+    gap: 12px;
+  }
+}

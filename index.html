@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Interactive 2026 FIFA World Cup knockout bracket."
+    >
+    <title>2026 World Cup Knockout Bracket</title>
+    <link rel="stylesheet" href="./src/styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <div class="title-block">
+          <p class="eyebrow">2026 FIFA World Cup</p>
+          <h1>Knockout Bracket</h1>
+          <p class="snapshot-line">Round of 32 to champion</p>
+        </div>
+        <button id="reset-picks" class="reset-button" type="button">
+          Reset
+        </button>
+      </header>
+
+      <section id="source-root" class="source-panel" aria-label="Data sources"></section>
+
+      <section class="bracket-scroll" aria-label="Interactive bracket">
+        <div id="bracket-root"></div>
+      </section>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

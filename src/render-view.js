@@ -89,7 +89,7 @@ function renderMatch(match, state, matches, teams) {
 
 function renderRound(round, roundMatches, state, matches, teams) {
   return `
-    <section class="round-column" aria-labelledby="round-${escapeHtml(round)}">
+    <section class="round-column" data-round="${escapeHtml(round)}" aria-labelledby="round-${escapeHtml(round)}">
       <h2 id="round-${escapeHtml(round)}">${escapeHtml(roundLabels[round] ?? round)}</h2>
       <div class="round-stack">
         ${roundMatches
@@ -112,7 +112,7 @@ function renderChampionPanel(state, teams) {
           ${champion ? escapeHtml(champion.name) : `Winner M${championMatchId}`}
         </strong>
         <span class="champion-hint">
-          ${champion ? 'Final path complete' : 'Pick the final winner to crown a champion'}
+          ${champion ? 'Final path complete' : 'Awaiting final winner'}
         </span>
       </div>
     </section>
