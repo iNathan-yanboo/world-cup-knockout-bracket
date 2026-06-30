@@ -1,13 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta
       name="description"
-      content="Interactive 2026 FIFA World Cup knockout bracket."
+      content="可拖拽缩放、可点击晋级的 2026 世界杯淘汰赛晋级图。"
     >
-    <title>2026 World Cup Knockout Bracket</title>
+    <title>世界杯淘汰赛晋级图</title>
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230d2f26'/%3E%3Cpath d='M18 16h28v10c0 9-5.8 16.1-14 17.7C23.8 42.1 18 35 18 26V16Z' fill='%23d8aa38'/%3E%3Cpath d='M25 48h14v5H25z' fill='%23f7f4ea'/%3E%3Cpath d='M21 53h22v5H21z' fill='%23f7f4ea'/%3E%3C/svg%3E"
@@ -18,20 +18,25 @@
     <main class="app-shell">
       <header class="app-header">
         <div class="title-block">
-          <p class="eyebrow">2026 FIFA World Cup</p>
-          <h1>Knockout Bracket</h1>
-          <p class="snapshot-line">Round of 32 to champion</p>
+          <p class="eyebrow">2026 世界杯 · 淘汰赛画布</p>
+          <h1>世界杯淘汰赛晋级图</h1>
+          <p class="snapshot-line">左右半区向中心冠军汇聚，点击球队一路预测到冠军</p>
         </div>
-        <button id="reset-picks" class="reset-button" type="button">
-          Reset
-        </button>
+        <div class="toolbar" aria-label="画布控制">
+          <button class="tool-button" id="zoom-out" type="button" aria-label="缩小">−</button>
+          <span class="zoom-readout" id="zoom-readout">39%</span>
+          <button class="tool-button" id="zoom-in" type="button" aria-label="放大">+</button>
+          <button class="tool-button" id="reset-view" type="button">重置视图</button>
+          <button class="tool-button" id="sync-results" type="button">同步赛果</button>
+          <button id="reset-picks" class="tool-button is-primary" type="button">
+            重置晋级
+          </button>
+        </div>
       </header>
 
-      <section id="source-root" class="source-panel" aria-label="Data sources"></section>
+      <section id="source-root" class="source-panel" aria-label="数据来源"></section>
 
-      <section class="bracket-scroll" aria-label="Interactive bracket">
-        <div id="bracket-root"></div>
-      </section>
+      <section id="bracket-root"></section>
     </main>
 
     <script type="module" src="./src/main.js"></script>

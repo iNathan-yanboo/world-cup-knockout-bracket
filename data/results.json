@@ -1,0 +1,28 @@
+{
+  "snapshotDate": "2026-06-30",
+  "timezone": "Asia/Shanghai",
+  "note": "自动同步赛果快照：已确认 M73 加拿大、M74 巴拉圭、M76 巴西晋级；M75 等待最终可信来源确认。",
+  "lockedResults": {
+    "73": {
+      "winnerId": "CAN",
+      "score": "加拿大 1-0 南非",
+      "confirmedAt": "2026-06-29"
+    },
+    "74": {
+      "winnerId": "PAR",
+      "score": "巴拉圭 1-1 德国，点球 4-3 晋级",
+      "confirmedAt": "2026-06-30"
+    },
+    "76": {
+      "winnerId": "BRA",
+      "score": "巴西 2-1 日本",
+      "confirmedAt": "2026-06-30"
+    }
+  },
+  "matchStatuses": {
+    "73": "加拿大 1-0 南非",
+    "74": "巴拉圭 1-1 德国，点球 4-3 晋级",
+    "75": "90 分钟 1-1，待最终确认",
+    "76": "巴西 2-1 日本"
+  }
+}

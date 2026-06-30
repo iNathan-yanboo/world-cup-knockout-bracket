@@ -78,25 +78,28 @@ try {
     [91, 99], [92, 99], [95, 100], [96, 100], [99, 102], [100, 102], [102, 'champion-right']
   ];
 
-  const cardWidth = 248;
-  const center = { x: 1045, y: 470, width: 430, height: 340 };
+  const cardWidth = 288;
+  const cardCenterY = 79;
+  const rowStart = 170;
+  const rowGap = 220;
+  const center = { x: 1480, y: 791, width: 430, height: 450 };
   const xByRound = {
-    left32: 70,
-    left16: 360,
-    left8: 625,
-    left4: 740,
-    right4: 1535,
-    right8: 1650,
-    right16: 1915,
-    right32: 2205
+    left32: 100,
+    left16: 445,
+    left8: 810,
+    left4: 1145,
+    right4: 1957,
+    right8: 2292,
+    right16: 2657,
+    right32: 3002
   };
   const positions = {};
 
   leftOrder.forEach((id, index) => {
-    positions[id] = { side: 'left', x: xByRound.left32, y: 150 + index * 116 };
+    positions[id] = { side: 'left', x: xByRound.left32, y: rowStart + index * rowGap };
   });
   rightOrder.forEach((id, index) => {
-    positions[id] = { side: 'right', x: xByRound.right32, y: 150 + index * 116 };
+    positions[id] = { side: 'right', x: xByRound.right32, y: rowStart + index * rowGap };
   });
 
   function centerY(a, b) {
@@ -124,11 +127,11 @@ try {
     102: { side: 'right', x: xByRound.right4, y: centerY(99, 100) }
   });
   Object.assign(positions, {
-    'champion-left': { side: 'center', x: center.x, y: center.y + center.height / 2 - 48 },
+    'champion-left': { side: 'center', x: center.x, y: center.y + center.height / 2 - cardCenterY },
     'champion-right': {
       side: 'center',
       x: center.x + center.width,
-      y: center.y + center.height / 2 - 48
+      y: center.y + center.height / 2 - cardCenterY
     }
   });
 
@@ -183,12 +186,15 @@ try {
   function renderChampion() {
     return `
       <section class="champion-hub" style="left:${center.x}px;top:${center.y}px" data-match="104">
-        <div class="champion-ring">冠</div>
-        <span class="champion-label">决赛中心 · M104</span>
-        <strong class="champion-name">世界冠军</strong>
-        <div class="final-slots">
-          <div class="final-slot"><span>左半区冠军</span><span>胜者 M101</span></div>
-          <div class="final-slot"><span>右半区冠军</span><span>胜者 M102</span></div>
+        <img class="trophy-burst" src="./assets/champion-trophy-burst.png" alt="" aria-hidden="true">
+        <div class="champion-copy">
+          <div class="champion-ring">冠</div>
+          <span class="champion-label">决赛中心 · M104</span>
+          <strong class="champion-name">世界冠军</strong>
+          <div class="final-slots">
+            <div class="final-slot"><span>左半区冠军</span><span>胜者 M101</span></div>
+            <div class="final-slot"><span>右半区冠军</span><span>胜者 M102</span></div>
+          </div>
         </div>
       </section>
     `;
@@ -208,7 +214,7 @@ try {
 
     return `
       <div class="zone-label" style="left:${xByRound.left32}px;top:56px">左半区 · 八组对阵</div>
-      <div class="zone-label" style="left:${xByRound.right32 - 112}px;top:56px;text-align:right">右半区 · 八组对阵</div>
+      <div class="zone-label" style="left:${xByRound.right32 - 72}px;top:56px;text-align:right">右半区 · 八组对阵</div>
       ${labels
         .map(
           ([label, x, y, className]) =>
@@ -224,13 +230,13 @@ try {
     const fromIsRight = fromPos.side === 'right';
     const toIsCenterRight = to === 'champion-right';
     const fromX = fromIsRight ? fromPos.x : fromPos.x + cardWidth;
-    const fromY = fromPos.y + 45;
+    const fromY = fromPos.y + cardCenterY;
     const toX = toIsCenterRight
       ? toPos.x
       : fromIsRight
         ? toPos.x + cardWidth
         : toPos.x;
-    const toY = toPos.y + 45;
+    const toY = toPos.y + cardCenterY;
     const curve = Math.max(72, Math.abs(toX - fromX) * 0.5);
     const c1 = fromIsRight ? fromX - curve : fromX + curve;
     const c2 = fromIsRight ? toX + curve : toX - curve;
@@ -248,7 +254,7 @@ try {
     connectors.innerHTML = links.map(([from, to]) => connectorPath(from, to)).join('');
   }
 
-  let view = { x: -25, y: 42, scale: 0.54 };
+  let view = { x: 6, y: 36, scale: 0.39 };
   let drag = null;
 
   function applyView() {
@@ -298,7 +304,7 @@ try {
   document.querySelector('#zoom-in').addEventListener('click', () => zoom(0.08));
   document.querySelector('#zoom-out').addEventListener('click', () => zoom(-0.08));
   document.querySelector('#reset-view').addEventListener('click', () => {
-    view = { x: -25, y: 42, scale: 0.54 };
+    view = { x: 6, y: 36, scale: 0.39 };
     applyView();
   });
 

@@ -47,6 +47,14 @@ export function createInitialState(defaultPicks = {}) {
   };
 }
 
+export function getLockedPicks(lockedResults = {}) {
+  return Object.fromEntries(
+    Object.entries(lockedResults)
+      .filter(([, result]) => result?.winnerId)
+      .map(([matchId, result]) => [matchId, result.winnerId])
+  );
+}
+
 export function getMatchTeams(matchId, state, matches, teams) {
   const match = buildMatchMap(matches).get(matchId);
 
@@ -60,7 +68,7 @@ export function getMatchTeams(matchId, state, matches, teams) {
   });
 }
 
-export function selectWinner(matchId, teamId, state, matches) {
+function setWinner(matchId, teamId, state, matches) {
   const matchMap = buildMatchMap(matches);
   const match = matchMap.get(matchId);
 
@@ -100,12 +108,37 @@ export function selectWinner(matchId, teamId, state, matches) {
   };
 }
 
+export function selectWinner(matchId, teamId, state, matches, lockedResults = {}) {
+  if (lockedResults[matchId]?.winnerId) {
+    return state;
+  }
+
+  return setWinner(matchId, teamId, state, matches);
+}
+
+export function applyLockedResults(state, lockedResults = {}, matches) {
+  const matchIds = matches.map((match) => match.id);
+  let nextState = state;
+
+  for (const matchId of matchIds) {
+    const winnerId = lockedResults[matchId]?.winnerId;
+
+    if (!winnerId) {
+      continue;
+    }
+
+    nextState = setWinner(matchId, winnerId, nextState, matches);
+  }
+
+  return nextState;
+}
+
 export function getChampion(state, teams) {
   const championTeamId = state.picks[championMatchId];
   return championTeamId ? teams[championTeamId] ?? null : null;
 }
 
-export function validateBracket(matches, teams) {
+export function validateBracket(matches, teams, lockedResults = {}) {
   const issues = [];
   const matchMap = buildMatchMap(matches);
   const matchIds = new Set();
@@ -134,6 +167,18 @@ export function validateBracket(matches, teams) {
       if (!slot.teamId && !slot.winnerOf) {
         issues.push(`Match ${match.id} has an empty slot`);
       }
+    }
+  }
+
+  for (const [matchId, result] of Object.entries(lockedResults)) {
+    if (!matchMap.has(matchId)) {
+      issues.push(`Locked result references missing match ${matchId}`);
+    }
+
+    if (!result?.winnerId) {
+      issues.push(`Locked result ${matchId} must include a winnerId`);
+    } else if (!teams[result.winnerId]) {
+      issues.push(`Locked result ${matchId} references missing team ${result.winnerId}`);
     }
   }
 
