@@ -13,6 +13,7 @@ import {
 } from './bracket-engine.js';
 import { fetchResultPayload, mergeResultPayload } from './result-sync.js';
 import { renderBracket, renderSourceMeta } from './render-view.js';
+import { exportBracketSnapshot } from './snapshot-export.js';
 
 const bracketRoot = document.querySelector('#bracket-root');
 const sourceRoot = document.querySelector('#source-root');
@@ -22,6 +23,7 @@ const zoomInButton = document.querySelector('#zoom-in');
 const zoomOutButton = document.querySelector('#zoom-out');
 const zoomReadout = document.querySelector('#zoom-readout');
 const syncButton = document.querySelector('#sync-results');
+const exportButton = document.querySelector('#export-snapshot');
 
 let state = createInitialState(defaultPicks);
 let activeMatches = baseMatches;
@@ -30,6 +32,7 @@ let activeLockedResults = { ...lockedResults };
 let syncStatus = { state: 'idle', message: '使用内置快照，正在自动同步' };
 let view = { x: 6, y: 36, scale: 0.39 };
 let drag = null;
+let exportStatusTimer = null;
 
 function applyView() {
   const canvas = document.querySelector('#bracket-canvas');
@@ -93,6 +96,37 @@ async function syncResults() {
   renderApp();
 }
 
+function setExportButtonState(label, disabled = false) {
+  exportButton.textContent = label;
+  exportButton.disabled = disabled;
+}
+
+function scheduleExportButtonReset() {
+  window.clearTimeout(exportStatusTimer);
+  exportStatusTimer = window.setTimeout(() => {
+    setExportButtonState('导出图片');
+  }, 1800);
+}
+
+async function exportSnapshot() {
+  window.clearTimeout(exportStatusTimer);
+  setExportButtonState('导出中', true);
+
+  try {
+    await exportBracketSnapshot({
+      domain: 'worldcup.inathan.wang',
+      owner: 'iNathan',
+      snapshotDate: activeSourceMeta.snapshotDate
+    });
+    setExportButtonState('已导出');
+  } catch (error) {
+    console.error(error);
+    setExportButtonState('导出失败');
+  }
+
+  scheduleExportButtonReset();
+}
+
 bracketRoot.addEventListener('click', (event) => {
   const teamButton = event.target.closest('[data-match-id][data-team-id]');
 
@@ -122,6 +156,7 @@ resetButton.addEventListener('click', () => {
 });
 
 syncButton.addEventListener('click', syncResults);
+exportButton.addEventListener('click', exportSnapshot);
 zoomInButton.addEventListener('click', () => zoom(0.08));
 zoomOutButton.addEventListener('click', () => zoom(-0.08));
 resetViewButton.addEventListener('click', resetView);

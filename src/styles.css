@@ -130,6 +130,11 @@ h1 {
   border-color: rgba(44, 134, 80, 0.5);
 }
 
+.tool-button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
 .tool-button.is-primary {
   border-color: rgba(216, 171, 54, 0.45);
   color: var(--gold-deep);
