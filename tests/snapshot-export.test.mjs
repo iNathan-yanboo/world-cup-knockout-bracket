@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+  buildExportCredits,
   buildExportFooter,
   buildSnapshotFilename,
   resolveCanvasSize
@@ -20,14 +21,30 @@ test('resolves export dimensions from the full bracket canvas', () => {
 test('builds attribution footer for exported bracket images', () => {
   const footer = buildExportFooter({
     domain: 'worldcup.inathan.wang',
-    owner: 'iNathan',
+    repoUrl: 'https://github.com/iNathan-yanboo/world-cup-knockout-bracket',
     snapshotDate: '2026-06-30',
     generatedAt: new Date('2026-06-30T12:00:00Z')
   });
 
   assert.match(footer, /worldcup\.inathan\.wang/);
-  assert.match(footer, /© 2026 iNathan/);
+  assert.match(footer, /github\.com\/iNathan-yanboo\/world-cup-knockout-bracket/);
+  assert.doesNotMatch(footer, /版权所有/);
+  assert.doesNotMatch(footer, /© 2026 iNathan/);
   assert.match(footer, /数据快照：2026-06-30/);
+});
+
+test('builds export credits with github repo instead of copyright text', () => {
+  const credits = buildExportCredits({
+    domain: 'worldcup.inathan.wang',
+    repoUrl: 'https://github.com/iNathan-yanboo/world-cup-knockout-bracket',
+    snapshotDate: '2026-06-30',
+    generatedAt: new Date('2026-06-30T12:00:00Z')
+  });
+
+  assert.equal(credits.domain, 'worldcup.inathan.wang');
+  assert.equal(credits.repoUrl, 'github.com/iNathan-yanboo/world-cup-knockout-bracket');
+  assert.match(credits.meta, /数据快照：2026-06-30/);
+  assert.doesNotMatch(credits.meta, /版权所有/);
 });
 
 test('builds a stable png filename', () => {

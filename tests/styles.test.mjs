@@ -10,3 +10,14 @@ test('disables text selection while dragging the bracket canvas', () => {
   assert.ok(viewportRule);
   assert.match(viewportRule.groups.body, /user-select:\s*none;/);
 });
+
+test('keeps the mobile header compact so the canvas remains visible', () => {
+  const mobileRule = /@media \(max-width: 860px\) \{(?<body>[\s\S]*)\n\}/.exec(css);
+
+  assert.ok(mobileRule);
+  assert.match(mobileRule.groups.body, /\.eyebrow\s*\{[^}]*display:\s*none;/);
+  assert.match(mobileRule.groups.body, /\.snapshot-line\s*\{[^}]*display:\s*none;/);
+  assert.match(mobileRule.groups.body, /\.toolbar\s*\{[^}]*flex-wrap:\s*nowrap;/);
+  assert.match(mobileRule.groups.body, /\.toolbar\s*\{[^}]*overflow-x:\s*auto;/);
+  assert.match(mobileRule.groups.body, /\.tool-button,\s*\n\s*\.zoom-readout\s*\{[^}]*min-height:\s*34px;/);
+});

@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a static-client PNG export for the full World Cup knockout bracket canvas with domain and copyright attribution.
+**Goal:** Build a static-client PNG export for the full World Cup knockout bracket canvas with domain and GitHub project attribution.
 
 **Architecture:** Add one focused export module used by `src/main.js`. The module resolves full canvas dimensions, reads the current bracket DOM, redraws cards/connectors/labels/images into an offscreen canvas, adds a footer, and triggers a PNG download.
 
@@ -50,13 +50,13 @@ test('resolves export dimensions from the full bracket canvas', () => {
 test('builds attribution footer for exported bracket images', () => {
   const footer = buildExportFooter({
     domain: 'worldcup.inathan.wang',
-    owner: 'iNathan',
+    repoUrl: 'https://github.com/iNathan-yanboo/world-cup-knockout-bracket',
     snapshotDate: '2026-06-30',
     generatedAt: new Date('2026-06-30T12:00:00Z')
   });
 
   assert.match(footer, /worldcup\.inathan\.wang/);
-  assert.match(footer, /© 2026 iNathan/);
+  assert.match(footer, /github\.com\/iNathan-yanboo\/world-cup-knockout-bracket/);
   assert.match(footer, /数据快照：2026-06-30/);
 });
 
@@ -98,7 +98,7 @@ Add `<button class="tool-button" id="export-snapshot" type="button">导出图片
 
 - [ ] **Step 2: Wire click handler**
 
-Import `exportBracketSnapshot` in `src/main.js`, read `#export-snapshot`, and call the exporter with `domain: 'worldcup.inathan.wang'`, `owner: 'iNathan'`, and the active snapshot date.
+Import `exportBracketSnapshot` in `src/main.js`, read `#export-snapshot`, and call the exporter with `domain: 'worldcup.inathan.wang'`, `repoUrl: 'https://github.com/iNathan-yanboo/world-cup-knockout-bracket'`, and the active snapshot date.
 
 - [ ] **Step 3: Add UI states**
 

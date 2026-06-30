@@ -14,6 +14,12 @@ import {
 import { fetchResultPayload, mergeResultPayload } from './result-sync.js';
 import { renderBracket, renderSourceMeta } from './render-view.js';
 import { exportBracketSnapshot } from './snapshot-export.js';
+import {
+  applyPinchZoom,
+  clampScale,
+  getPointerCenter,
+  getPointerDistance
+} from './viewport-gestures.js';
 
 const bracketRoot = document.querySelector('#bracket-root');
 const sourceRoot = document.querySelector('#source-root');
@@ -32,6 +38,8 @@ let activeLockedResults = { ...lockedResults };
 let syncStatus = { state: 'idle', message: '使用内置快照，正在自动同步' };
 let view = { x: 6, y: 36, scale: 0.39 };
 let drag = null;
+let pinch = null;
+const activePointers = new Map();
 let exportStatusTimer = null;
 
 function applyView() {
@@ -46,7 +54,7 @@ function applyView() {
 }
 
 function zoom(delta) {
-  view.scale = Math.min(1.28, Math.max(0.32, view.scale + delta));
+  view.scale = clampScale(view.scale + delta);
   applyView();
 }
 
@@ -115,7 +123,7 @@ async function exportSnapshot() {
   try {
     await exportBracketSnapshot({
       domain: 'worldcup.inathan.wang',
-      owner: 'iNathan',
+      repoUrl: 'https://github.com/iNathan-yanboo/world-cup-knockout-bracket',
       snapshotDate: activeSourceMeta.snapshotDate
     });
     setExportButtonState('已导出');
@@ -161,6 +169,46 @@ zoomInButton.addEventListener('click', () => zoom(0.08));
 zoomOutButton.addEventListener('click', () => zoom(-0.08));
 resetViewButton.addEventListener('click', resetView);
 
+function getActivePointerList() {
+  return [...activePointers.values()];
+}
+
+function pointerFromEvent(event) {
+  return {
+    pointerId: event.pointerId,
+    x: event.clientX,
+    y: event.clientY
+  };
+}
+
+function startDrag(pointer, viewport) {
+  drag = {
+    pointerId: pointer.pointerId,
+    x: pointer.x,
+    y: pointer.y,
+    startX: view.x,
+    startY: view.y,
+    viewport
+  };
+  pinch = null;
+}
+
+function startPinch(viewport) {
+  const pointers = getActivePointerList();
+
+  if (pointers.length < 2) {
+    return;
+  }
+
+  pinch = {
+    startView: { ...view },
+    startDistance: getPointerDistance(pointers),
+    startCenter: getPointerCenter(pointers),
+    viewport
+  };
+  drag = null;
+}
+
 bracketRoot.addEventListener('pointerdown', (event) => {
   const viewport = event.target.closest('.bracket-viewport');
 
@@ -171,36 +219,67 @@ bracketRoot.addEventListener('pointerdown', (event) => {
   event.preventDefault();
   document.getSelection()?.removeAllRanges();
 
-  drag = {
-    pointerId: event.pointerId,
-    x: event.clientX,
-    y: event.clientY,
-    startX: view.x,
-    startY: view.y,
-    viewport
-  };
+  const pointer = pointerFromEvent(event);
+
+  activePointers.set(event.pointerId, pointer);
   viewport.classList.add('is-dragging');
   viewport.setPointerCapture(event.pointerId);
+
+  if (activePointers.size >= 2) {
+    startPinch(viewport);
+    return;
+  }
+
+  startDrag(pointer, viewport);
 });
 
 document.addEventListener('pointermove', (event) => {
-  if (!drag) {
+  if (!activePointers.has(event.pointerId)) {
     return;
   }
 
   event.preventDefault();
+  activePointers.set(event.pointerId, pointerFromEvent(event));
+
+  if (pinch && activePointers.size >= 2) {
+    view = applyPinchZoom({
+      ...pinch,
+      currentPointers: getActivePointerList()
+    });
+    applyView();
+    return;
+  }
+
+  if (!drag || drag.pointerId !== event.pointerId) {
+    return;
+  }
+
   view.x = drag.startX + event.clientX - drag.x;
   view.y = drag.startY + event.clientY - drag.y;
   applyView();
 });
 
 function endDrag(event) {
-  if (!drag || event.pointerId !== drag.pointerId) {
+  if (!activePointers.has(event.pointerId) && !drag && !pinch) {
     return;
   }
 
-  drag.viewport.classList.remove('is-dragging');
+  const viewport = drag?.viewport ?? pinch?.viewport;
+  activePointers.delete(event.pointerId);
+
+  if (pinch && activePointers.size >= 2) {
+    startPinch(pinch.viewport);
+    return;
+  }
+
+  if (activePointers.size === 1 && viewport) {
+    startDrag(getActivePointerList()[0], viewport);
+    return;
+  }
+
+  viewport?.classList.remove('is-dragging');
   drag = null;
+  pinch = null;
 }
 
 document.addEventListener('pointerup', endDrag);

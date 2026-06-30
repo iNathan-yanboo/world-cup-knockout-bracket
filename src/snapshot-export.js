@@ -64,25 +64,38 @@ export function resolveCanvasSize(canvas) {
 
 export function buildExportFooter({
   domain = 'worldcup.inathan.wang',
-  owner = 'iNathan',
+  repoUrl = 'https://github.com/iNathan-yanboo/world-cup-knockout-bracket',
   snapshotDate = '未知',
   generatedAt = new Date()
 } = {}) {
-  const year = generatedAt.getFullYear();
+  const credits = buildExportCredits({ domain, repoUrl, snapshotDate, generatedAt });
 
   return `
     <footer class="snapshot-export-footer">
       <div>
-        <strong>${escapeHtml(domain)}</strong>
-        <span>世界杯淘汰赛晋级图</span>
+        <strong>${escapeHtml(credits.domain)}</strong>
+        <span>${escapeHtml(credits.title)}</span>
       </div>
       <div>
-        <span>© ${year} ${escapeHtml(owner)} 版权所有</span>
-        <span>数据快照：${escapeHtml(snapshotDate)}</span>
-        <span>生成时间：${escapeHtml(formatGeneratedTime(generatedAt))}</span>
+        <span>${escapeHtml(credits.repoUrl)}</span>
+        <span>${escapeHtml(credits.meta)}</span>
       </div>
     </footer>
   `;
+}
+
+export function buildExportCredits({
+  domain = 'worldcup.inathan.wang',
+  repoUrl = 'https://github.com/iNathan-yanboo/world-cup-knockout-bracket',
+  snapshotDate = '未知',
+  generatedAt = new Date()
+} = {}) {
+  return {
+    domain,
+    title: '世界杯淘汰赛晋级图',
+    repoUrl: repoUrl.replace(/^https?:\/\//, ''),
+    meta: `数据快照：${snapshotDate} · 生成时间：${formatGeneratedTime(generatedAt)}`
+  };
 }
 
 export function buildSnapshotFilename(generatedAt = new Date()) {
@@ -541,7 +554,9 @@ async function drawChampion(ctx, sourceCanvas, baseUrl, imageCache) {
   );
 }
 
-function drawExportFooter(ctx, width, height, { domain, owner, snapshotDate, generatedAt }) {
+function drawExportFooter(ctx, width, height, { domain, repoUrl, snapshotDate, generatedAt }) {
+  const credits = buildExportCredits({ domain, repoUrl, snapshotDate, generatedAt });
+
   ctx.fillStyle = '#f8fbf4';
   ctx.fillRect(0, height, width, exportFooterHeight);
   ctx.strokeStyle = 'rgba(23, 79, 49, 0.16)';
@@ -555,15 +570,14 @@ function drawExportFooter(ctx, width, height, { domain, owner, snapshotDate, gen
   ctx.fillStyle = '#174f31';
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
-  ctx.fillText(domain, 96, height + 70);
+  ctx.fillText(credits.domain, 96, height + 70);
 
   setFont(ctx, 30, 780);
   ctx.fillStyle = 'rgba(19, 34, 28, 0.72)';
-  ctx.fillText('世界杯淘汰赛晋级图', 610, height + 70);
+  ctx.fillText(credits.title, 610, height + 70);
 
-  const meta = `© ${generatedAt.getFullYear()} ${owner} 版权所有 · 数据快照：${snapshotDate} · 生成时间：${formatGeneratedTime(generatedAt)}`;
   ctx.textAlign = 'right';
-  ctx.fillText(meta, width - 96, height + 70);
+  ctx.fillText(`${credits.repoUrl} · ${credits.meta}`, width - 96, height + 70);
 }
 
 async function renderSnapshotCanvas(sourceCanvas, options) {
@@ -572,7 +586,7 @@ async function renderSnapshotCanvas(sourceCanvas, options) {
     width,
     height,
     domain,
-    owner,
+    repoUrl,
     snapshotDate,
     generatedAt
   } = options;
@@ -593,7 +607,7 @@ async function renderSnapshotCanvas(sourceCanvas, options) {
   }
 
   await drawChampion(ctx, sourceCanvas, documentRef.baseURI, imageCache);
-  drawExportFooter(ctx, width, height, { domain, owner, snapshotDate, generatedAt });
+  drawExportFooter(ctx, width, height, { domain, repoUrl, snapshotDate, generatedAt });
 
   return output;
 }
@@ -602,7 +616,7 @@ export async function exportBracketSnapshot({
   canvasSelector = '#bracket-canvas',
   documentRef = document,
   domain = 'worldcup.inathan.wang',
-  owner = 'iNathan',
+  repoUrl = 'https://github.com/iNathan-yanboo/world-cup-knockout-bracket',
   snapshotDate = '未知',
   generatedAt = new Date()
 } = {}) {
@@ -613,7 +627,7 @@ export async function exportBracketSnapshot({
     width,
     height,
     domain,
-    owner,
+    repoUrl,
     snapshotDate,
     generatedAt
   });

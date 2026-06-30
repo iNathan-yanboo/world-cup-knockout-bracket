@@ -13,5 +13,12 @@ test('exposes a toolbar action for exporting the full bracket image', () => {
 test('wires snapshot export to the production domain attribution', () => {
   assert.match(mainJs, /exportBracketSnapshot/);
   assert.match(mainJs, /worldcup\.inathan\.wang/);
+  assert.match(mainJs, /github\.com\/iNathan-yanboo\/world-cup-knockout-bracket/);
   assert.match(mainJs, /activeSourceMeta\.snapshotDate/);
+});
+
+test('wires pointer tracking for mobile pinch zooming the canvas', () => {
+  assert.match(mainJs, /activePointers/);
+  assert.match(mainJs, /applyPinchZoom/);
+  assert.match(mainJs, /getPointerDistance/);
 });

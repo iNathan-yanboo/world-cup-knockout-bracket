@@ -8,7 +8,7 @@ Add a screenshot export feature that downloads the complete knockout bracket can
 
 - Add a toolbar button labeled `导出图片`.
 - Clicking it exports the full bracket canvas, including all current manual picks and locked results.
-- The export includes attribution text with `worldcup.inathan.wang`, `© 2026 iNathan`, the generated time, and the current data snapshot date.
+- The export includes attribution text with `worldcup.inathan.wang`, the GitHub project address, the generated time, and the current data snapshot date.
 - While exporting, the button shows a short busy state. If image generation fails, the button shows a short failure state and the page remains usable.
 
 ## Architecture

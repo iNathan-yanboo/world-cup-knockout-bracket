@@ -615,12 +615,33 @@ h1 {
 
 @media (max-width: 860px) {
   .app-header {
+    display: grid;
+    grid-template-columns: 1fr;
     align-items: start;
-    padding: 12px;
+    gap: 6px;
+    padding: 6px 10px;
   }
 
   .toolbar {
-    max-width: 210px;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    width: 100%;
+    max-width: none;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tool-button,
+  .zoom-readout {
+    min-height: 34px;
+    flex: 0 0 auto;
+    padding: 0 9px;
+    font-size: 0.78rem;
   }
 
   .source-panel {
@@ -632,10 +653,14 @@ h1 {
   }
 
   h1 {
-    font-size: 1.7rem;
+    font-size: 1.24rem;
   }
 
   .snapshot-line {
-    font-size: 0.8rem;
+    display: none;
+  }
+
+  .eyebrow {
+    display: none;
   }
 }
