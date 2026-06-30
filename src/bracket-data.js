@@ -1,7 +1,7 @@
 export const sourceMeta = {
   snapshotDate: '2026-06-30',
   timezone: 'Asia/Shanghai',
-  note: '2026 年世界杯 32 强淘汰赛静态快照。已确认 M73、M74、M76 赛果；M75 等待最终可信来源确认。',
+  note: '2026 年世界杯 32 强淘汰赛静态快照。已确认 M73、M74、M75、M76 赛果。',
   links: [
     {
       label: 'FIFA 赛程',
@@ -88,6 +88,11 @@ export const lockedResults = {
     score: '巴拉圭 1-1 德国，点球 4-3 晋级',
     confirmedAt: '2026-06-30'
   },
+  '75': {
+    winnerId: 'MAR',
+    score: '荷兰 1-1 摩洛哥，摩洛哥点球 3-2 晋级',
+    confirmedAt: '2026-06-30'
+  },
   '76': {
     winnerId: 'BRA',
     score: '巴西 2-1 日本',
@@ -120,7 +125,7 @@ export const matches = [
     id: '75',
     round: 'round32',
     date: 'Jun 29',
-    status: '90 分钟 1-1，待最终确认',
+    status: '荷兰 1-1 摩洛哥，摩洛哥点球 3-2 晋级',
     slots: [{ teamId: 'NED' }, { teamId: 'MAR' }]
   },
   {

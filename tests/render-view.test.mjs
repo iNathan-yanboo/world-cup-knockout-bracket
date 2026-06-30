@@ -20,9 +20,11 @@ test('renders the split canvas bracket with confirmed locked winners', () => {
   assert.match(html, /data-match-id="73"/);
   assert.match(html, /加拿大/);
   assert.match(html, /巴拉圭/);
+  assert.match(html, /摩洛哥/);
   assert.match(html, /巴西/);
   assert.match(html, /已确认/);
   assert.match(html, /巴拉圭 1-1 德国，点球 4-3 晋级/);
+  assert.match(html, /荷兰 1-1 摩洛哥，摩洛哥点球 3-2 晋级/);
   assert.match(html, /team-button is-selected is-locked/);
   assert.match(html, /disabled/);
   assert.match(html, /flagcdn\.com\/w80\/ca\.png/);
@@ -45,7 +47,6 @@ test('renders champion once final winner is selected', () => {
   for (const [matchId, teamId] of [
     ['77', 'FRA'],
     ['89', 'PAR'],
-    ['75', 'NED'],
     ['90', 'CAN'],
     ['97', 'PAR'],
     ['83', 'POR'],

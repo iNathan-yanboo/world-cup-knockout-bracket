@@ -25,6 +25,7 @@ test('initial state preselects confirmed winners and propagates them into the ne
 
   assert.equal(state.picks['73'], 'CAN');
   assert.equal(state.picks['74'], 'PAR');
+  assert.equal(state.picks['75'], 'MAR');
   assert.equal(state.picks['76'], 'BRA');
   assert.deepEqual(getLockedPicks(lockedResults), defaultPicks);
   assert.deepEqual(
@@ -33,7 +34,7 @@ test('initial state preselects confirmed winners and propagates them into the ne
   );
   assert.deepEqual(
     match90Teams.map((team) => team && team.name),
-    ['Canada', null]
+    ['Canada', 'Morocco']
   );
   assert.deepEqual(
     match91Teams.map((team) => team && team.name),
@@ -44,9 +45,12 @@ test('initial state preselects confirmed winners and propagates them into the ne
 test('locked confirmed matches cannot be changed by manual selection', () => {
   const state = createInitialState(defaultPicks);
   const nextState = selectWinner('74', 'GER', state, matches, lockedResults);
+  const nextMoroccoState = selectWinner('75', 'NED', state, matches, lockedResults);
 
   assert.strictEqual(nextState, state);
   assert.equal(nextState.picks['74'], 'PAR');
+  assert.strictEqual(nextMoroccoState, state);
+  assert.equal(nextMoroccoState.picks['75'], 'MAR');
 });
 
 test('applying synced locked results overrides stale manual picks and clears dependents', () => {
@@ -71,7 +75,6 @@ test('selecting winners propagates through every round to champion', () => {
   for (const [matchId, teamId] of [
     ['77', 'FRA'],
     ['89', 'PAR'],
-    ['75', 'NED'],
     ['90', 'CAN'],
     ['97', 'PAR'],
     ['83', 'POR'],

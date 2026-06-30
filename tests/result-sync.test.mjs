@@ -41,5 +41,6 @@ test('ships a static results JSON payload for cloud-hosted auto sync', () => {
 
   assert.equal(payload.snapshotDate, '2026-06-30');
   assert.equal(payload.lockedResults['74'].winnerId, 'PAR');
+  assert.equal(payload.lockedResults['75'].winnerId, 'MAR');
   assert.equal(payload.lockedResults['76'].winnerId, 'BRA');
 });
